@@ -42,3 +42,16 @@ kover {
         allProjects()
     }
 }
+
+sonar {
+    properties {
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.organization", "Rodrigo Cerqueira")
+        property("sonar.projectKey", "rudrigaum")
+        property("sonar.projectName", "InvestTrack")
+        property("sonar.sources", "app/src/main")
+        property("sonar.tests", "app/src/test,app/src/androidTest")
+        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/kover/report.xml")
+        property("sonar.exclusions", "**/R.class,**/R$*.class,**/BuildConfig.*,**/generated/**")
+    }
+}
