@@ -47,7 +47,7 @@ sonar {
     properties {
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.organization", "Rodrigo Cerqueira")
-        property("sonar.projectKey", "rudrigaum")
+        property("sonar.projectKey", "rudrigaum_InvestTrack")
         property("sonar.projectName", "InvestTrack")
         property("sonar.sources", "app/src/main")
         property("sonar.tests", "app/src/test,app/src/androidTest")
