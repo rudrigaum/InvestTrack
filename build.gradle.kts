@@ -49,9 +49,7 @@ sonar {
         property("sonar.organization", "rudrigaum")
         property("sonar.projectKey", "rudrigaum_InvestTrack")
         property("sonar.projectName", "InvestTrack")
-        property("sonar.sources", "app/src/main")
-        property("sonar.tests", "app/src/test,app/src/androidTest")
         property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/kover/report.xml")
-        property("sonar.exclusions", "**/R.class,**/R$*.class,**/BuildConfig.*,**/generated/**")
+        property("sonar.exclusions", "**/R.class,**/R\$*.class,**/BuildConfig.*,**/generated/**")
     }
 }
