@@ -1,5 +1,3 @@
-// settings.gradle.kts
-
 pluginManagement {
     repositories {
         google {
@@ -16,8 +14,6 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
-    // Prevents modules from declaring their own repositories —
-    // all dependencies must come from here. Enforces consistency.
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
@@ -28,16 +24,15 @@ dependencyResolutionManagement {
 rootProject.name = "InvestTrack"
 
 // Core modules
-include(":app")
+ include(":app")
 
-// We will uncomment these as we create each module throughout the project:
-// include(":core:network")
-// include(":core:database")
-// include(":core:ui")
+ include(":core:network")
+ include(":core:database")
+ include(":core:ui")
 
-// Feature modules
-// include(":feature:home")
-// include(":feature:search")
-// include(":feature:detail")
-// include(":feature:watchlist")
-// include(":feature:exchange")
+ //Feature modules
+ include(":feature:home")
+ include(":feature:search")
+ include(":feature:detail")
+ include(":feature:watchlist")
+ include(":feature:exchange")
