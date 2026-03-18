@@ -1,0 +1,36 @@
+# Built application files
+*.apk
+*.aab
+*.ap_
+
+# Build directories — covers root and all submodules
+build/
+.gradle/
+
+# Android Studio — ignore entire folder
+.idea/
+
+# Module files
+*.iml
+*.iws
+*.ipr
+
+# Local configuration — never commit this
+local.properties
+
+# External native builds
+.externalNativeBuild/
+.cxx/
+
+# Captures
+captures/
+
+# Keystore — never commit credentials
+*.jks
+*.keystore
+
+# MacOS
+.DS_Store
+
+# Kotlin
+*.class
