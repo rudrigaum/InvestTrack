@@ -10,6 +10,9 @@ android {
 
     defaultConfig {
         minSdk = 24
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
     }
 
     compileOptions {
