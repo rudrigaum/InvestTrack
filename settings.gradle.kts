@@ -24,15 +24,15 @@ dependencyResolutionManagement {
 rootProject.name = "InvestTrack"
 
 // Core modules
- include(":app")
+include(":app")
 
- include(":core:network")
- include(":core:database")
- include(":core:ui")
+include(":core:network")
+include(":core:database")
+include(":core:ui")
 
- //Feature modules
- include(":feature:home")
- include(":feature:search")
- include(":feature:detail")
- include(":feature:watchlist")
- include(":feature:exchange")
+// Feature modules
+include(":feature:home")
+include(":feature:search")
+include(":feature:detail")
+include(":feature:watchlist")
+include(":feature:exchange")
