@@ -26,4 +26,6 @@ android {
 
 dependencies {
     implementation(libs.bundles.network)
+    implementation(platform(libs.okhttp.bom))
+    implementation(libs.bundles.network)
 }
