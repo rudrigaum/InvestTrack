@@ -95,4 +95,9 @@ dependencies {
     testImplementation(libs.bundles.testing.unit)
     androidTestImplementation(composeBom)
     androidTestImplementation(libs.bundles.testing.android)
+
+    // Feature modules
+    implementation(project(":core:network"))
+    implementation(project(":core:database"))
+    implementation(project(":core:ui"))
 }
