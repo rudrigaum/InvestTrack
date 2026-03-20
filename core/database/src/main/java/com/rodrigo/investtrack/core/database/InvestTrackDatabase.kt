@@ -11,7 +11,6 @@ import com.rodrigo.investtrack.core.database.entity.WatchlistEntity
     exportSchema = true,
 )
 abstract class InvestTrackDatabase : RoomDatabase() {
-
     abstract fun watchlistDao(): WatchlistDao
 
     companion object {

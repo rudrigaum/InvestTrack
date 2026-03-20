@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -25,7 +27,8 @@ android {
 }
 
 dependencies {
-    implementation(libs.bundles.network)
     implementation(platform(libs.okhttp.bom))
     implementation(libs.bundles.network)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 }

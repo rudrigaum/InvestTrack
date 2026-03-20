@@ -13,9 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.rodrigo.investtrack.core.ui.theme.InvestTrackTheme
 
 @Composable
-fun LoadingIndicator(
-    modifier: Modifier = Modifier,
-) {
+fun LoadingIndicator(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,

@@ -8,7 +8,6 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface BrApiService {
-
     @GET("quote/{tickers}")
     suspend fun getQuotes(
         @Path("tickers") tickers: String,

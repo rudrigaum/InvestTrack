@@ -7,7 +7,6 @@ plugins {
 android {
     namespace = "com.rodrigo.investtrack.core.ui"
     compileSdk = 35
-
     defaultConfig {
         minSdk = 24
     }

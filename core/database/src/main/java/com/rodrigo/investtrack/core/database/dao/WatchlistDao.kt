@@ -4,11 +4,11 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.rodrigo.investtrack.core.database.entity.WatchlistEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WatchlistDao {
-
     @Query("SELECT * FROM watchlist ORDER BY added_at DESC")
     fun observeAll(): Flow<List<WatchlistEntity>>
 
