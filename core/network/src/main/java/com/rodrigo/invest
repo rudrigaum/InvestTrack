@@ -1,0 +1,295 @@
+clear
+
+# AuthInterceptor
+cat > core/network/src/main/java/com/rodrigo/investtrack/core/network/interceptor/AuthInterceptor.kt << 'EOF'
+package com.rodrigo.investtrack.core.network.interceptor
+
+import okhttp3.Interceptor
+import okhttp3.Response
+import javax.inject.Inject
+import javax.inject.Named
+
+class AuthInterceptor @Inject constructor(
+    @Named("brapi_token") private val token: String,
+) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val originalRequest = chain.request()
+        val authenticatedUrl = originalRequest.url
+            .newBuilder()
+            .addQueryParameter(QUERY_PARAM_TOKEN, token)
+            .build()
+        val authenticatedRequest = originalRequest
+            .newBuilder()
+            .url(authenticatedUrl)
+            .build()
+        return chain.proceed(authenticatedRequest)
+    }
+
+    companion object {
+        private const val QUERY_PARAM_TOKEN = "token"
+    }
+}
+EOF
+
+# NetworkResult
+cat > core/network/src/main/java/com/rodrigo/investtrack/core/network/model/NetworkResult.kt << 'EOF'
+package com.rodrigo.investtrack.core.network.model
+
+sealed class NetworkResult<out T> {
+    data class Success<T>(val data: T) : NetworkResult<T>()
+    data class Error(
+        val code: Int? = null,
+        val message: String? = null,
+        val throwable: Throwable? = null,
+    ) : NetworkResult<Nothing>()
+    data object Loading : NetworkResult<Nothing>()
+}
+
+inline fun <T, R> NetworkResult<T>.map(transform: (T) -> R): NetworkResult<R> {
+    return when (this) {
+        is NetworkResult.Success -> NetworkResult.Success(transform(data))
+        is NetworkResult.Error -> this
+        is NetworkResult.Loading -> this
+    }
+}
+
+inline fun <T> NetworkResult<T>.onSuccess(action: (T) -> Unit): NetworkResult<T> {
+    if (this is NetworkResult.Success) action(data)
+    return this
+}
+
+inline fun <T> NetworkResult<T>.onError(action: (NetworkResult.Error) -> Unit): NetworkResult<T> {
+    if (this is NetworkResult.Error) action(this)
+    return this
+}
+EOF
+
+# DTOs
+cat > core/network/src/main/java/com/rodrigo/investtrack/core/network/dto/QuoteResponseDto.kt << 'EOF'
+package com.rodrigo.investtrack.core.network.dto
+
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class QuoteResponseDto(
+    @SerialName("results") val results: List<QuoteDto> = emptyList(),
+    @SerialName("requestedAt") val requestedAt: String? = null,
+    @SerialName("took") val took: String? = null,
+)
+
+@Serializable
+data class QuoteDto(
+    @SerialName("symbol") val symbol: String,
+    @SerialName("shortName") val shortName: String? = null,
+    @SerialName("longName") val longName: String? = null,
+    @SerialName("currency") val currency: String? = null,
+    @SerialName("regularMarketPrice") val regularMarketPrice: Double? = null,
+    @SerialName("regularMarketChangePercent") val regularMarketChangePercent: Double? = null,
+    @SerialName("regularMarketChange") val regularMarketChange: Double? = null,
+    @SerialName("regularMarketOpen") val regularMarketOpen: Double? = null,
+    @SerialName("regularMarketDayHigh") val regularMarketDayHigh: Double? = null,
+    @SerialName("regularMarketDayLow") val regularMarketDayLow: Double? = null,
+    @SerialName("regularMarketVolume") val regularMarketVolume: Long? = null,
+    @SerialName("regularMarketPreviousClose") val regularMarketPreviousClose: Double? = null,
+    @SerialName("fiftyTwoWeekHigh") val fiftyTwoWeekHigh: Double? = null,
+    @SerialName("fiftyTwoWeekLow") val fiftyTwoWeekLow: Double? = null,
+    @SerialName("marketCap") val marketCap: Long? = null,
+    @SerialName("logourl") val logoUrl: String? = null,
+    @SerialName("historicalDataPrice") val historicalDataPrice: List<HistoricalPriceDto> = emptyList(),
+    @SerialName("dividendsData") val dividendsData: DividendsDataDto? = null,
+    @SerialName("priceEarnings") val priceEarnings: Double? = null,
+    @SerialName("earningsPerShare") val earningsPerShare: Double? = null,
+)
+
+@Serializable
+data class HistoricalPriceDto(
+    @SerialName("date") val date: Long? = null,
+    @SerialName("open") val open: Double? = null,
+    @SerialName("high") val high: Double? = null,
+    @SerialName("low") val low: Double? = null,
+    @SerialName("close") val close: Double? = null,
+    @SerialName("volume") val volume: Long? = null,
+    @SerialName("adjustedClose") val adjustedClose: Double? = null,
+)
+
+@Serializable
+data class DividendsDataDto(
+    @SerialName("cashDividends") val cashDividends: List<CashDividendDto> = emptyList(),
+)
+
+@Serializable
+data class CashDividendDto(
+    @SerialName("assetIssued") val assetIssued: String? = null,
+    @SerialName("paymentDate") val paymentDate: String? = null,
+    @SerialName("rate") val rate: Double? = null,
+    @SerialName("relatedTo") val relatedTo: String? = null,
+    @SerialName("approvedOn") val approvedOn: String? = null,
+    @SerialName("isinCode") val isinCode: String? = null,
+    @SerialName("label") val label: String? = null,
+    @SerialName("lastDatePrior") val lastDatePrior: String? = null,
+    @SerialName("remarks") val remarks: String? = null,
+)
+EOF
+
+cat > core/network/src/main/java/com/rodrigo/investtrack/core/network/dto/SearchResponseDto.kt << 'EOF'
+package com.rodrigo.investtrack.core.network.dto
+
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class SearchResponseDto(
+    @SerialName("stocks") val stocks: List<StockSearchDto> = emptyList(),
+)
+
+@Serializable
+data class StockSearchDto(
+    @SerialName("stock") val ticker: String,
+    @SerialName("name") val name: String? = null,
+    @SerialName("close") val close: Double? = null,
+    @SerialName("change") val change: Double? = null,
+    @SerialName("volume") val volume: Long? = null,
+    @SerialName("market_cap") val marketCap: Long? = null,
+    @SerialName("logo") val logoUrl: String? = null,
+    @SerialName("sector") val sector: String? = null,
+    @SerialName("type") val type: String? = null,
+)
+EOF
+
+cat > core/network/src/main/java/com/rodrigo/investtrack/core/network/dto/ExchangeResponseDto.kt << 'EOF'
+package com.rodrigo.investtrack.core.network.dto
+
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class ExchangeResponseDto(
+    @SerialName("currency") val currency: List<CurrencyDto> = emptyList(),
+)
+
+@Serializable
+data class CurrencyDto(
+    @SerialName("fromCurrency") val fromCurrency: String? = null,
+    @SerialName("toCurrency") val toCurrency: String? = null,
+    @SerialName("name") val name: String? = null,
+    @SerialName("high") val high: Double? = null,
+    @SerialName("low") val low: Double? = null,
+    @SerialName("bidVariation") val bidVariation: Double? = null,
+    @SerialName("percentageChange") val percentageChange: String? = null,
+    @SerialName("bidPrice") val bidPrice: Double? = null,
+    @SerialName("askPrice") val askPrice: Double? = null,
+    @SerialName("updatedAtTimestamp") val updatedAtTimestamp: String? = null,
+    @SerialName("updatedAtDate") val updatedAtDate: String? = null,
+)
+EOF
+
+# BrApiService
+cat > core/network/src/main/java/com/rodrigo/investtrack/core/network/api/BrApiService.kt << 'EOF'
+package com.rodrigo.investtrack.core.network.api
+
+import com.rodrigo.investtrack.core.network.dto.ExchangeResponseDto
+import com.rodrigo.investtrack.core.network.dto.QuoteResponseDto
+import com.rodrigo.investtrack.core.network.dto.SearchResponseDto
+import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Query
+
+interface BrApiService {
+    @GET("quote/{tickers}")
+    suspend fun getQuotes(
+        @Path("tickers") tickers: String,
+        @Query("range") range: String = "1d",
+        @Query("interval") interval: String = "1d",
+        @Query("fundamental") fundamental: Boolean = false,
+        @Query("dividends") dividends: Boolean = false,
+    ): QuoteResponseDto
+
+    @GET("quote/list")
+    suspend fun searchAssets(
+        @Query("search") query: String,
+    ): SearchResponseDto
+
+    @GET("v2/currency")
+    suspend fun getExchangeRates(
+        @Query("currency") currency: String = "USD-BRL,EUR-BRL,BTC-BRL,GBP-BRL",
+    ): ExchangeResponseDto
+}
+EOF
+
+# NetworkModule
+cat > core/network/src/main/java/com/rodrigo/investtrack/core/network/di/NetworkModule.kt << 'EOF'
+package com.rodrigo.investtrack.core.network.di
+
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.rodrigo.investtrack.core.network.api.BrApiService
+import com.rodrigo.investtrack.core.network.interceptor.AuthInterceptor
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import java.util.concurrent.TimeUnit
+import javax.inject.Named
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object NetworkModule {
+    private const val BASE_URL = "https://brapi.dev/api/"
+    private const val TIMEOUT_SECONDS = 30L
+
+    @Provides
+    @Named("brapi_token")
+    fun provideBrApiToken(): String = com.rodrigo.investtrack.BuildConfig.BRAPI_TOKEN
+
+    @Provides
+    @Singleton
+    fun provideJson(): Json = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+        encodeDefaults = true
+    }
+
+    @Provides
+    @Singleton
+    fun provideLoggingInterceptor(): HttpLoggingInterceptor =
+        HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(
+        authInterceptor: AuthInterceptor,
+        loggingInterceptor: HttpLoggingInterceptor,
+    ): OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor(authInterceptor)
+        .addInterceptor(loggingInterceptor)
+        .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        .writeTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        .build()
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(
+        okHttpClient: OkHttpClient,
+        json: Json,
+    ): Retrofit = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .client(okHttpClient)
+        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+        .build()
+
+    @Provides
+    @Singleton
+    fun provideBrApiService(retrofit: Retrofit): BrApiService =
+        retrofit.create(BrApiService::class.java)
+}
+EOF
+find core/network/src -name "*.kt"

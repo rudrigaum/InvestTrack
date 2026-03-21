@@ -8,6 +8,12 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+val localProperties =
+    com.android.build.gradle.internal.cxx.configure.gradleLocalProperties(
+        rootDir,
+        providers,
+    )
+
 android {
     namespace = "com.rodrigo.investtrack"
     compileSdk = 35
@@ -20,6 +26,12 @@ android {
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "BRAPI_TOKEN",
+            "\"${localProperties.getProperty("BRAPI_TOKEN", "demo")}\"",
+        )
     }
 
     buildTypes {
@@ -83,4 +95,9 @@ dependencies {
     testImplementation(libs.bundles.testing.unit)
     androidTestImplementation(composeBom)
     androidTestImplementation(libs.bundles.testing.android)
+
+    // Feature modules
+    implementation(project(":core:network"))
+    implementation(project(":core:database"))
+    implementation(project(":core:ui"))
 }
